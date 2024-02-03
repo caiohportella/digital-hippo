@@ -11,7 +11,6 @@ export const authRouter = router({
       const { email, password } = input;
       const payload = await getPayloadClient();
 
-      // check if user already exists
       const { docs: users } = await payload.find({
         collection: "users",
         where: {
@@ -22,8 +21,8 @@ export const authRouter = router({
       });
 
       if (users.length !== 0) throw new TRPCError({ code: "CONFLICT" });
-      console.log('before payload create')
-      let cons = await payload.create({
+
+      await payload.create({
         collection: "users",
         data: {
           email,
@@ -31,8 +30,6 @@ export const authRouter = router({
           role: "user",
         },
       });
-
-      console.log('after payload create', cons)
 
       return { success: true, sentToEmail: email };
     }),
@@ -58,6 +55,7 @@ export const authRouter = router({
     .input(AuthCredentialsValidator)
     .mutation(async ({ input, ctx }) => {
       const { email, password } = input;
+      const { res } = ctx;
 
       const payload = await getPayloadClient();
 
@@ -68,6 +66,7 @@ export const authRouter = router({
             email,
             password,
           },
+          res,
         });
 
         return { success: true };

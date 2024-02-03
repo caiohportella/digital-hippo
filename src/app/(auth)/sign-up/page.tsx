@@ -73,7 +73,7 @@ const Page = () => {
               })}
               href="/sign-in"
             >
-              Already have an account? Sign-in
+              Already have an account? Sign in
               <ArrowRight className="h-4 w-4" />
             </Link>
           </div>
@@ -88,7 +88,7 @@ const Page = () => {
                     className={cn({
                       "focus-visible:ring-red-500": errors.email,
                     })}
-                    placeholder="you@example.com"
+                    placeholder="caio@exorcise.com"
                   />
                   {errors?.email && (
                     <p className="text-sm text-red-500">

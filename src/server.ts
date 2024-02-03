@@ -6,6 +6,7 @@ import { IncomingMessage } from "http";
 import nextBuild from "next/dist/build";
 import path from "path";
 import { appRouter } from "./trpc";
+import { inferAsyncReturnType } from "@trpc/server";
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -17,6 +18,8 @@ const createContext = ({
   req,
   res,
 });
+
+export type ExpressContext = inferAsyncReturnType<typeof createContext>;
 
 export type WebhookRequest = IncomingMessage & {
   rawBody: Buffer;
@@ -55,6 +58,8 @@ const start = async () => {
 
   app.use((req, res) => nextHandler(req, res));
 
+  console.log("NextJS running");
+
   nextApp.prepare().then(() => {
     payload.logger.info("Next.js started");
 
@@ -63,6 +68,8 @@ const start = async () => {
         `Next.js App URL: ${process.env.NEXT_PUBLIC_SERVER_URL}`
       );
     });
+
+    console.log("NextJS running")
   });
 };
 

@@ -1,23 +1,35 @@
 import { Access, CollectionConfig } from "payload/types";
 
+const adminsAndUser: Access = ({ req: { user } }) => {
+  if (user.role === "admin") return true;
+
+  return {
+    id: {
+      equals: user.id,
+    },
+  };
+};
+
 export const Users: CollectionConfig = {
   slug: "users",
   auth: {
     verify: {
-      generateEmailHTML: ({ token }) => { return `<a href="http://localhost:3000/verify-email?token=${token}">Verify Email</a>`},
-    }
+      generateEmailHTML: ({ token }) => {
+        return `<a href="${process.env.NEXT_PUBLIC_SERVER_URL}/verify-email?token=${token}">Verify your account</a>`;
+      },
+    },
   },
   access: {
-    read: () => true,
+    read: adminsAndUser,
     create: () => true,
+    update: ({ req }) => req.user.role === "admin",
+    delete: ({ req }) => req.user.role === "admin",
   },
   fields: [
     {
       name: "role",
       defaultValue: "user",
-      admin: {
-        condition: ({ req }) => req.user.role === "admin",
-      },
+      required: true,
       type: "select",
       options: [
         {

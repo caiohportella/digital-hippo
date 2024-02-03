@@ -5,9 +5,9 @@ import { slateEditor } from "@payloadcms/richtext-slate";
 import { buildConfig } from "payload/config";
 import { webpackBundler } from "@payloadcms/bundler-webpack";
 import { Users } from "./collections/Users";
-import { Products } from "./collections/Products";
+import { Products } from "./collections/Products/Products";
 import { Media } from "./collections/Media";
-import { ProductFiles } from "./collections/ProductFiles";
+import { ProductFiles } from "./collections/ProductFile";
 import { Orders } from "./collections/Orders";
 
 dotenv.config({
@@ -24,8 +24,9 @@ export default buildConfig({
     user: "users",
     bundler: webpackBundler(),
     meta: {
+      
       titleSuffix: "- DigitalHippo",
-      favicon: "@/app/favicon.ico",
+      favicon: "/favicon.ico",
       ogImage: "/thumbnail.jpg",
     },
   },
