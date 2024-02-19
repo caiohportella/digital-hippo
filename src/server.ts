@@ -9,6 +9,8 @@ import { appRouter } from "./trpc";
 import { inferAsyncReturnType } from "@trpc/server";
 import bodyParser from "body-parser";
 import { stripeWebhookHandler } from "./webhooks";
+import { PayloadRequest } from "payload/types";
+import { parse } from "url";
 
 const app = express();
 const PORT = Number(process.env.PORT) || 3000;
@@ -23,7 +25,7 @@ const createContext = ({
 
 export type ExpressContext = inferAsyncReturnType<typeof createContext>;
 
-export type WebhookRequest = IncomingMessage & { rawBody: Buffer; };
+export type WebhookRequest = IncomingMessage & { rawBody: Buffer };
 
 const start = async () => {
   const webhookMiddleware = bodyParser.json({
@@ -42,6 +44,20 @@ const start = async () => {
       },
     },
   });
+
+  const cartRouter = express.Router();
+  cartRouter.use(payload.authenticate);
+  cartRouter.get("/", (req, res) => {
+    const request = req as PayloadRequest;
+
+    if (request.user) return res.redirect(`/sign-in?origin=cart`);
+
+    const parsedURL = parse(req.url, true);
+
+    return nextApp.render(req, res, "/cart", parsedURL.query);
+  });
+
+  app.use("/cart", cartRouter);
 
   if (process.env.NEXT_BUILD) {
     app.listen(PORT, async () => {
